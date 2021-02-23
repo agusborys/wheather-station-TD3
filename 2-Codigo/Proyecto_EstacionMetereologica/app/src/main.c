@@ -20,7 +20,7 @@ void leerDatos(void);
 
 
 /* Tarea 1 */
-static void Task1(void *pvParameters)
+static void TaskBME280(void *pvParameters)
 {
 
 
@@ -58,7 +58,7 @@ int main(void)
 	SystemCoreClockUpdate();
 	init_i2c();
     /* Creacion de tareas */
-	xTaskCreate(Task1, (signed char *) "Tarea 1",
+	xTaskCreate(TaskBME280, (signed char *) "Tarea 1",
     			configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
     			(xTaskHandle *) NULL);
    /* xTaskCreate(Task2, (signed char *) "Tarea 2",
