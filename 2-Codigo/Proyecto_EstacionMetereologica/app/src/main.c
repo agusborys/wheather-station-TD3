@@ -16,37 +16,47 @@
 void leerDatos(void);
 void leerADCs(void);
 
+//Variables Double
 double Temperature;
 double Humidity;
 double Pressure;
 double Luminosity;
 double GroundHumidity;
-
 double coefADC_Porc = 100.0/4096.0;
 
+//Variables int16
 uint16_t dataLDR;
 uint16_t dataGnd;
 
+//variables Char
 int flagADC=0;
 char tempChar[6];
 char humChar[6];
 char pressChar[8];
 char lumChar[6];
 char humSueloChar[6];
+
+//Handler de semaforos
+xSemaphoreHandle s1;
+xSemaphoreHandle s2;
+xSemaphoreHandle s3;
+
 /* Tarea 1 */
 static void TaskBME280(void *pvParameters)
 {
 
-
 	//Reseteo BME280 para "despertarlo"
 	reset_BME280();
-	vTaskDelay(50/portTICK_RATE_MS);
-
+	//vTaskDelay(50/portTICK_RATE_MS);
 
 	while(1)
 	{
+		xSemaphoreTake(s1,portMAX_DELAY);
+
 		leerDatos();
-		sendDataHttp(Temperature, Humidity, Pressure);
+
+		xSemaphoreGive(s3);
+
 	}
 }
 
@@ -54,24 +64,32 @@ static void TaskBME280(void *pvParameters)
 /* Tarea 2 */
 static void TaskGSM(void *pvParameters)
 {
-	reset_BME280();
-	vTaskDelay(50/portTICK_RATE_MS);
+
 	init_gsm();
-	leerDatos();
 
 	while(1)
 	{
-		leerDatos();
+		xSemaphoreTake(s2,portMAX_DELAY);
+
 		SendData(tempChar, humChar, pressChar, lumChar, humSueloChar);
+
+		xSemaphoreGive(s1);
 	}
 }
 
+/* Tarea 3 */
 static void TaskLDR(void *pvParameters)
 {
 	init_adc();
+
 	while(1)
 	{
+		xSemaphoreTake(s3,portMAX_DELAY);
+
 		leerADCs();
+
+		xSemaphoreGive(s2);
+
 	}
 }
 
@@ -86,7 +104,16 @@ int main(void)
 	init_i2c();
 	init_timer();
 	init_uart();
-    /* Creacion de tareas */
+
+/* Creación de los semáforos */
+	vSemaphoreCreateBinary(s1);
+	vSemaphoreCreateBinary(s2);
+	vSemaphoreCreateBinary(s3);
+
+/* Condición inicial: s2 tomado, s1 y s3 liberado */
+		xSemaphoreTake(s2,0);
+
+/* Creacion de tareas */
 	xTaskCreate(TaskBME280, (signed char *) "Tarea 1",
     			configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
     			(xTaskHandle *) NULL);
@@ -126,8 +153,12 @@ void leerADCs(void){
 
 	Luminosity = 100 - (dataLDR * coefADC_Porc);
 	GroundHumidity = 100 - (dataGnd * coefADC_Porc);
+	sprintf(humSueloChar,"%.2f",GroundHumidity);
+	sprintf(lumChar,"%.2f",Luminosity);
+
 
 }
+
 void ADC_IRQHandler(void)
 {
 

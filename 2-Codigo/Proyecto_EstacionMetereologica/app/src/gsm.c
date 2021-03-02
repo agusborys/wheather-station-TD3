@@ -12,15 +12,19 @@ static uint8_t rxbuff[UART_RRB_SIZE], txbuff[UART_SRB_SIZE];
 //Comandos de config
 const char comm1[] = "AT\r\n";
 const char comm2[] = "AT+IPR=9600\r\n";
+
 //Comandos configuracion de GPRS
 const char commGPRS[] = "AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"\r\n";
-const char commApn[] = "AT+SAPBR=3,1,\"APN\",\"wap.gprs.unifon.com.ar\"\r\n";
-const char commUser[] = "AT+SAPBR=3,1,\"USER\",\"wap\"\r\n";
-const char commPWD[] = "AT+SAPBR=3,1,\"PWD\",\"wap\"\r\n";
+const char commApnM[] = "AT+SAPBR=3,1,\"APN\",\"wap.gprs.unifon.com.ar\"\r\n";
+const char commUserM[] = "AT+SAPBR=3,1,\"USER\",\"wap\"\r\n";
+const char commPwdM[] = "AT+SAPBR=3,1,\"PWD\",\"wap\"\r\n";
 const char commOpenGprs[] = "AT+SAPBR=1,1\r\n";
 const char commApnComplete[] = "AT+CSTT=\"wap.gprs.unifon.com.ar\",\"wap\",\"wap\"\r\n";
 const char commCheckIP[] = "AT+SAPBR=2,1\r\n";
 const char commAttGprs[] = "AT+CGATT=1\r\n";
+const char commApnC[] = "AT+SAPBR=3,1,\"APN\",\"igprs.claro.com.ar\"\r\n";
+const char commUserC[] = "AT+SAPBR=3,1,\"USER\",\"clarogprs\"\r\n";
+const char commPwdC[] = "AT+SAPBR=3,1,\"PWD\",\"clarogprs999\"\r\n";
 
 //Comandos inicialización HTTP
 const char commHttpInit[] = "AT+HTTPINIT\r\n";
@@ -30,20 +34,12 @@ const char commHttpAction[] = "AT+HTTPACTION=0\r\n";
 const char commHttpFinish[] = "AT+HTTPTERM\r\n";
 const char commHttpRead[] = "AT+HTTPREAD\r\n";
 
-
-/*const char httpserver[] = "http://things.ubidots.com";
-const int httpport = 80;
-const char userAgent[] = "LPC1769";
-char const VERSION[] = "1.0";*/
-
-
 //Variables a utilizar
 uint8_t check[100];
 uint8_t key;
 int bytes;
 int i = 0;
 int a = 0;
-int error = 0;
 char data[146];
 char* fieldTemp = "&field1=";
 char* fieldHum = "&field2=";
@@ -155,13 +151,13 @@ void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo){
 //	Chip_UART_SendRB(UART_SELECTION, &txring, &commApnComplete, sizeof(commApnComplete) - 1);
 //	waitForOk();
 
-	Chip_UART_SendRB(UART_SELECTION, &txring, &commApn, sizeof(commApn) - 1);
+	Chip_UART_SendRB(UART_SELECTION, &txring, &commApnC, sizeof(commApnC) - 1);
 	waitForOk();
 
-	Chip_UART_SendRB(UART_SELECTION, &txring, &commUser, sizeof(commUser) - 1);
+	Chip_UART_SendRB(UART_SELECTION, &txring, &commUserC, sizeof(commUserC) - 1);
 	waitForOk();
 
-	Chip_UART_SendRB(UART_SELECTION, &txring, &commPWD, sizeof(commPWD) - 1);
+	Chip_UART_SendRB(UART_SELECTION, &txring, &commPwdC, sizeof(commPwdC) - 1);
 	waitForOk();
 
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commOpenGprs, sizeof(commOpenGprs) - 1);
