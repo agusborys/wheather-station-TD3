@@ -40,7 +40,7 @@ uint8_t key;
 int bytes;
 int i = 0;
 int a = 0;
-char data[146];
+char data[150];
 char* fieldTemp = "&field1=";
 char* fieldHum = "&field2=";
 char* fieldPress = "&field3=";
@@ -105,29 +105,15 @@ int SerialDisponible(void){
 void init_gsm(void){
 	Chip_UART_SendRB(UART_SELECTION, &txring, &comm1, sizeof(comm1)-1);
 	//Hago demora para recibir respuesta
-	for(i = 0;i<9;i++){
-		a = 0;
-		while(a==0);
-	}
-
-	i = 0;
-	while (SerialDisponible()){
-		check[i] = key;
-		i++;
-	}
+	waitForOk();
 	Chip_UART_SendRB(UART_SELECTION, &txring, &comm2, sizeof(comm2) - 1);
-	a = 0;
-	while(a==0);
+	waitForOk();
 
 
 }
 
 void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo){
 
-	//sprintf(data, "%s%s%.2f%s%.2f%s%.2f\r\n",commHttpUrl,fieldTemp,temp,fieldHum,hum,fieldPress,press);
-//	gcvt(temp,4,tempChar);
-//	gcvt(temp,4,tempChar);
-//	gcvt(temp,4,tempChar);
 	strcat(data,commHttpUrl);
 	strcat(data,fieldTemp);
 	strcat(data,temp);
@@ -161,7 +147,7 @@ void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo){
 	waitForOk();
 
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commOpenGprs, sizeof(commOpenGprs) - 1);
-	waitForOk();
+	waitLongForOk();
 
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commCheckIP, sizeof(commCheckIP) - 1);
 	waitForOk();
@@ -178,7 +164,7 @@ void httpConection(void){
 //	while(a==0);
 
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commHttpProfile, sizeof(commHttpProfile) - 1);
-	waitForOk();
+	waitLongForOk();
 
 	Chip_UART_SendRB(UART_SELECTION, &txring, &data, sizeof(data) - 1);
 	waitForOk();
@@ -196,6 +182,18 @@ void httpConection(void){
 void waitForOk(void){
 
 	for(i = 0;i<5;i++){
+		a = 0;
+		while(a==0);
+	}
+	i = 0;
+	while (SerialDisponible()){
+		check[i] = key;
+		i++;
+	}
+}
+void waitLongForOk(void){
+
+	for(i = 0;i<15;i++){
 		a = 0;
 		while(a==0);
 	}

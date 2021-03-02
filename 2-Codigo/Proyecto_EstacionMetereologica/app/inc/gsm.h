@@ -23,5 +23,6 @@ int SerialDisponible(void);
 void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo);
 void waitForOk(void);
 void httpConection(void);
+void waitLongForOk(void);
 
 #endif /* GSM_H_ */

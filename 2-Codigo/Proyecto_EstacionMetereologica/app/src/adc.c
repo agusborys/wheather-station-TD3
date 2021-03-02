@@ -1,4 +1,4 @@
-#include <adc.h>
+#include "adc.h"
 
 static ADC_CLOCK_SETUP_T ADCSetup;
 
@@ -19,6 +19,7 @@ void init_adc(void)
 	/* Inicializa el ADC */
 	Chip_ADC_Init(LPC_ADC, &ADCSetup);
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
+	//Chip_ADC_EnableChannel(LPC_ADC, ADC_CH2, DISABLE);
 
 	/* Velocidad de conversión */
 	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, ADC_MAX_SAMPLE_RATE);
@@ -26,6 +27,7 @@ void init_adc(void)
 	/* Habilita la interrupción de ADC */
 	NVIC_EnableIRQ(ADC_IRQn);
 	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
+	//Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH2, DISABLE);
 
 	/* Desactiva modo ráfaga */
 	Chip_ADC_SetBurstCmd(LPC_ADC, DISABLE);
