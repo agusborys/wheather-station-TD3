@@ -1,0 +1,40 @@
+#include <adc.h>
+
+static ADC_CLOCK_SETUP_T ADCSetup;
+
+
+/* Inicialización del ADC */
+void init_adc(void)
+{
+	/* Asocia al pin a la función de ADC */
+	Chip_IOCON_PinMux(LPC_IOCON,ADC_CH0_PORT,ADC_CH0_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH1_PORT,ADC_CH1_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	Chip_IOCON_PinMux(LPC_IOCON,ADC_CH2_PORT,ADC_CH2_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH3_PORT,ADC_CH3_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH4_PORT,ADC_CH4_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH5_PORT,ADC_CH5_PIN,IOCON_MODE_INACT,IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH6_PORT,ADC_CH6_PIN,IOCON_MODE_INACT,IOCON_FUNC2);
+	//Chip_IOCON_PinMux(LPC_IOCON,ADC_CH7_PORT,ADC_CH7_PIN,IOCON_MODE_INACT,IOCON_FUNC2);
+
+	/* Inicializa el ADC */
+	Chip_ADC_Init(LPC_ADC, &ADCSetup);
+	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
+
+	/* Velocidad de conversión */
+	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, ADC_MAX_SAMPLE_RATE);
+
+	/* Habilita la interrupción de ADC */
+	NVIC_EnableIRQ(ADC_IRQn);
+	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
+
+	/* Desactiva modo ráfaga */
+	Chip_ADC_SetBurstCmd(LPC_ADC, DISABLE);
+
+	/* Inicia la conversión */
+	Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
+}
+
+
+
+
+
