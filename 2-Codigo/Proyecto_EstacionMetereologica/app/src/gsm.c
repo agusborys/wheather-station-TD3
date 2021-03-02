@@ -28,7 +28,7 @@ const char commHttpProfile[] = "AT+HTTPPARA=\"CID\",1\r\n";
 const char commHttpUrl[] = "AT+HTTPPARA=\"URL\",\"http://api.thingspeak.com/update?api_key=CVMAU399YCLAT9TH\"";
 const char commHttpAction[] = "AT+HTTPACTION=0\r\n";
 const char commHttpFinish[] = "AT+HTTPTERM\r\n";
-const char commHttpRead[] = "AT+HTTPREAD'\r\n";
+const char commHttpRead[] = "AT+HTTPREAD\r\n";
 
 
 /*const char httpserver[] = "http://things.ubidots.com";
@@ -44,11 +44,12 @@ int bytes;
 int i = 0;
 int a = 0;
 int error = 0;
-char data[122];
+char data[146];
 char* fieldTemp = "&field1=";
 char* fieldHum = "&field2=";
 char* fieldPress = "&field3=";
-
+char* fieldLum = "&field4=";
+char* fieldHumSuelo = "&field5=";
 
 void init_uart(void){
 
@@ -125,7 +126,7 @@ void init_gsm(void){
 
 }
 
-void setAPN(char* temp, char* hum, char* press){
+void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo){
 
 	//sprintf(data, "%s%s%.2f%s%.2f%s%.2f\r\n",commHttpUrl,fieldTemp,temp,fieldHum,hum,fieldPress,press);
 //	gcvt(temp,4,tempChar);
@@ -138,6 +139,10 @@ void setAPN(char* temp, char* hum, char* press){
 	strcat(data,hum);
 	strcat(data,fieldPress);
 	strcat(data,press);
+	strcat(data,fieldLum);
+	strcat(data,lum);
+	strcat(data,fieldHumSuelo);
+	strcat(data,humSuelo);
 	strcat(data,"\"\r\n");
 
 
@@ -170,17 +175,6 @@ void setAPN(char* temp, char* hum, char* press){
 }
 
 
-void sendDataHttp(double temp, double hum, double press){
-
-	char* fieldTemp = "&field1=";
-	char* fieldHum = "&field2=";
-	char* fieldPress = "&field3=";
-
-	sprintf(data, "%s%s%.2f%s%.2f%s%.2f\r\n",commHttpUrl,fieldTemp,temp,fieldHum,hum,fieldPress,press);
-
-	httpConection();
-}
-
 void httpConection(void){
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commHttpInit, sizeof(commHttpInit) - 1);
 	waitForOk();
@@ -199,6 +193,8 @@ void httpConection(void){
 	Chip_UART_SendRB(UART_SELECTION, &txring, &commHttpRead, sizeof(commHttpRead) - 1);
 	waitForOk();
 
+	Chip_UART_SendRB(UART_SELECTION, &txring, &commHttpFinish, sizeof(commHttpFinish) - 1);
+	waitForOk();
 }
 
 void waitForOk(void){

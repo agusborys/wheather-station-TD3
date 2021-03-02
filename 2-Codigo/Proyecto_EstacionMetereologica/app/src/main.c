@@ -9,7 +9,7 @@
 #include "gsm.h"
 #include "timer.h"
 #include <stdio.h>
-#include <stdlib.h>
+#include "string.h"
 
 //Declaro funciones
 void leerDatos(void);
@@ -21,6 +21,8 @@ double Pressure;
 char tempChar[6];
 char humChar[6];
 char pressChar[8];
+char lumChar[6];
+char humSueloChar[6];
 /* Tarea 1 */
 static void TaskBME280(void *pvParameters)
 {
@@ -47,12 +49,10 @@ static void TaskGSM(void *pvParameters)
 	init_gsm();
 	leerDatos();
 
-	//httpComunication();
 	while(1)
 	{
 		leerDatos();
-		setAPN(tempChar, humChar, pressChar);
-		//sendDataHttp(Temperature, Humidity, Pressure);
+		SendData(tempChar, humChar, pressChar, lumChar, humSueloChar);
 	}
 }
 

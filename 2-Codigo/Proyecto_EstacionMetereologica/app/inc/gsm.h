@@ -20,9 +20,8 @@ void init_gsm(void);
 void HANDLER_TIMER_NAME(void);
 void HANDLER_NAME(void);
 int SerialDisponible(void);
-void setAPN(char* temp, char* hum, char* press);
+void SendData(char* temp, char* hum, char* press,char* lum,char* humSuelo);
 void waitForOk(void);
-void sendDataHttp(double temp, double hum, double press);
 void httpConection(void);
 
 #endif /* GSM_H_ */
